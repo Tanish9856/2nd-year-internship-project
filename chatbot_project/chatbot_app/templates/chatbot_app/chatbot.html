@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #header {
+            background-color: #333;
+            color: rgb(188, 247, 178);
+            padding: 10px;
+            text-align: center;
+        }
+        #chatbox {
+            border: 1px solid #2ddd45;
+            border-radius: 5px;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+            margin: 10px;
+        }
+        .chat-message {
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .user {
+            background-color: #e9f4b1;
+            text-align: right;
+        }
+        .chatbot {
+            background-color: #0688c0;
+        }
+        /* Change the tab background color to brown */
+        .chat-tab {
+            background-color: brown;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>Welcome, I am Chatbot</h1>
+    </div>
+    <div id="chatbox"></div>
+    <input type="text" id="user-input" autofocus>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chatbox = document.getElementById('chatbox');
+            const inputField = document.getElementById('user-input');
+            let responses = [
+                { input: 'hello', response: 'Hi' },
+                { input: 'who are you', response: 'I am Chatbot' },
+                { input: 'what are you', response: 'I am an AI' },
+                // Add more responses here
+            ];
+            let pendingQuestion = null;
+
+            inputField.addEventListener('keyup', function (event) {
+                if (event.key === 'Enter') {
+                    const userMessage = inputField.value.trim();
+                    if (userMessage !== '') {
+                        if (pendingQuestion) {
+                            responses.push({ input: pendingQuestion, response: userMessage });
+                            pendingQuestion = null;
+                            appendMessage("Saved! Thanks for the response.", 'chatbot');
+                        } else {
+                            const responseMessage = getChatbotResponse(userMessage);
+                            appendMessage(userMessage, 'user');
+                            appendMessage(responseMessage, 'chatbot');
+                        }
+                        inputField.value = '';
+                    }
+                }
+            });
+
+            function getChatbotResponse(userMessage) {
+                let response = "Sorry, I don't understand";
+                let validResponses = responses.filter(r => r.input === userMessage.toLowerCase());
+                if (validResponses.length > 0) {
+                    let randomIndex = Math.floor(Math.random() * validResponses.length);
+                    response = validResponses[randomIndex].response;
+                    pendingQuestion = null;
+                } else if (!pendingQuestion) {
+                    response = "Sorry, I don't get it. Please provide a response.";
+                    pendingQuestion = userMessage;
+                }
+                return response;
+            }
+
+            function appendMessage(message, sender) {
+                const messageElement = document.createElement('div');
+                messageElement.className = `chat-message ${sender}`;
+                messageElement.innerText = message;
+                chatbox.appendChild(messageElement);
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }
+        });
+    </script>
+</body>
+</html>
